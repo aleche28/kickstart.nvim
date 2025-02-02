@@ -512,6 +512,12 @@ require('lazy').setup({
             vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
           end
 
+          -- Defined by me: jump to definition in vertical split
+          map('gv', '<C-w>v <cmd>Telescope lsp_definitions<cr>', '[G]oto Definition in [V]ertical Split')
+
+          -- Defined by me: jump to definition in horizontal split
+          map('gh', '<C-w>s <cmd>Telescope lsp_definitions<cr>', '[G]oto Definition in [H]orizontal Split')
+
           -- Jump to the definition of the word under your cursor.
           --  This is where a variable was first declared, or where a function is defined, etc.
           --  To jump back, press <C-t>.
@@ -658,20 +664,20 @@ require('lazy').setup({
       -- for you, so that they are available from within Neovim.
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
-        "black",
-        "csharp-language-server",
-        "csharpier",
-        "docker-compose-language-service",
-        "dockerfile-language-server",
-        "eslint-lsp",
-        "html-lsp",
-        "lua-language-server",
-        "markdownlint",
-        "prettier",
-        "python-lsp-server",
-        "stylua",
-        "typescript-language-server",
-        "yaml-language-server",
+        'black',
+        'csharp-language-server',
+        'csharpier',
+        'docker-compose-language-service',
+        'dockerfile-language-server',
+        'eslint-lsp',
+        'html-lsp',
+        'lua-language-server',
+        'markdownlint',
+        'prettier',
+        'python-lsp-server',
+        'stylua',
+        'typescript-language-server',
+        'yaml-language-server',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
