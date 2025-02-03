@@ -591,14 +591,14 @@ require('lazy').setup({
       })
 
       -- Change diagnostic symbols in the sign column (gutter)
-      -- if vim.g.have_nerd_font then
-      --   local signs = { ERROR = '', WARN = '', INFO = '', HINT = '' }
-      --   local diagnostic_signs = {}
-      --   for type, icon in pairs(signs) do
-      --     diagnostic_signs[vim.diagnostic.severity[type]] = icon
-      --   end
-      --   vim.diagnostic.config { signs = { text = diagnostic_signs } }
-      -- end
+      if vim.g.have_nerd_font then
+        local signs = { ERROR = '', WARN = '', INFO = '', HINT = '' }
+        local diagnostic_signs = {}
+        for type, icon in pairs(signs) do
+          diagnostic_signs[vim.diagnostic.severity[type]] = icon
+        end
+        vim.diagnostic.config { signs = { text = diagnostic_signs } }
+      end
 
       -- LSP servers and clients are able to communicate to each other what features they support.
       --  By default, Neovim doesn't support everything that is in the LSP specification.
@@ -658,20 +658,20 @@ require('lazy').setup({
       -- for you, so that they are available from within Neovim.
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
-        "black",
-        "csharp-language-server",
-        "csharpier",
-        "docker-compose-language-service",
-        "dockerfile-language-server",
-        "eslint-lsp",
-        "html-lsp",
-        "lua-language-server",
-        "markdownlint",
-        "prettier",
-        "python-lsp-server",
-        "stylua",
-        "typescript-language-server",
-        "yaml-language-server",
+        'black',
+        'csharp-language-server',
+        'csharpier',
+        'docker-compose-language-service',
+        'dockerfile-language-server',
+        'eslint-lsp',
+        'html-lsp',
+        'lua-language-server',
+        'markdownlint',
+        'prettier',
+        'python-lsp-server',
+        'stylua',
+        'typescript-language-server',
+        'yaml-language-server',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -728,7 +728,8 @@ require('lazy').setup({
         -- python = { "isort", "black" },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
+        javascript = { 'prettier', 'prettierd', stop_after_first = true },
+        html = { 'prettier' },
       },
     },
   },
@@ -946,7 +947,7 @@ require('lazy').setup({
   require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
+  require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.neo-tree',
   require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
