@@ -1,63 +1,17 @@
-return {
-  'ThePrimeagen/harpoon',
-  branch = 'harpoon2',
-  lazy = false,
-  dependencies = { 'nvim-lua/plenary.nvim' },
-  -- opts = {},
-  config = function()
-    require('harpoon'):setup()
-  end,
-  keys = {
-    {
-      '<leader>a',
-      function()
-        require('harpoon'):list():add()
-      end,
-      desc = 'harpoon file',
-    },
-    {
-      '<C-e>',
-      function()
-        local harpoon = require 'harpoon'
-        harpoon.ui:toggle_quick_menu(harpoon:list())
-      end,
-      desc = 'harpoon quick menu',
-    },
-    {
-      '<leader>1',
-      function()
-        require('harpoon'):list():select(1)
-      end,
-      desc = 'harpoon to file 1',
-    },
-    {
-      '<leader>2',
-      function()
-        require('harpoon'):list():select(2)
-      end,
-      desc = 'harpoon to file 2',
-    },
-    {
-      '<leader>3',
-      function()
-        require('harpoon'):list():select(3)
-      end,
-      desc = 'harpoon to file 3',
-    },
-    {
-      '<leader>4',
-      function()
-        require('harpoon'):list():select(4)
-      end,
-      desc = 'harpoon to file 4',
-    },
-    {
-      '<leader>5',
-      function()
-        require('harpoon'):list():select(5)
-      end,
-      desc = 'harpoon to file 5',
-    },
-  },
+-- Quick file marks and jumps
+-- https://github.com/ThePrimeagen/harpoon
+
+vim.pack.add {
+  { src = 'https://github.com/ThePrimeagen/harpoon', version = 'harpoon2' },
+  'https://github.com/nvim-lua/plenary.nvim',
 }
 
+local harpoon = require 'harpoon'
+harpoon:setup()
+
+vim.keymap.set('n', '<leader>a', function() harpoon:list():add() end, { desc = 'H[a]rpoon file' })
+vim.keymap.set('n', '<C-e>', function() harpoon.ui:toggle_quick_menu(harpoon:list()) end, { desc = 'Harpoon quick menu' })
+
+for i = 1, 5 do
+  vim.keymap.set('n', '<leader>' .. i, function() harpoon:list():select(i) end, { desc = 'Harpoon to file ' .. i })
+end
