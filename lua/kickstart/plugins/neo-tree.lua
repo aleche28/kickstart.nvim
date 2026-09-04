@@ -10,6 +10,11 @@ vim.pack.add {
 vim.keymap.set('n', '\\', '<Cmd>Neotree reveal<CR>', { desc = 'NeoTree reveal', silent = true })
 
 require('neo-tree').setup {
+  -- Quit Neovim when Neo-tree is the only window left in the tab, instead of
+  -- letting it expand to fill the screen and needing a second `:q`.
+  -- Neo-tree refuses (and warns) if any open buffer has unsaved changes.
+  close_if_last_window = true,
+
   filesystem = {
     window = {
       mappings = {
