@@ -559,7 +559,11 @@ do
   vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
   vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
   vim.keymap.set('n', '<leader>sF', builtin.find_files, { desc = '[S]earch [F]iles' })
-  vim.keymap.set('n', '<leader>sf', builtin.git_files, { desc = '[S]earch Git [F]iles' })
+  -- Prefer git-tracked files, but `git_files` errors outside a repository, so fall
+  -- back to a plain file search there instead of throwing.
+  vim.keymap.set('n', '<leader>sf', function()
+    if not pcall(builtin.git_files) then builtin.find_files() end
+  end, { desc = '[S]earch Git [F]iles (all files outside a repo)' })
   vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
   vim.keymap.set({ 'n', 'v' }, '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
   vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
@@ -831,19 +835,36 @@ do
   vim.list_extend(ensure_installed, {
     -- You can add other tools here that you want Mason to install.
     -- These are Mason *package* names (see `:Mason`), not lspconfig server names.
-    'black',
-    'csharp-language-server',
-    'csharpier',
+    --
+    -- Language servers. With `automatic_enable` above, installing one here is all
+    -- that is needed for it to attach; it does not also need a `servers` entry.
+    'arduino-language-server',
+    'basedpyright', -- Python types; pairs with `ruff` for lint/format
+    'clangd',
     'docker-compose-language-service',
     'dockerfile-language-server',
     'eslint-lsp',
+    'gopls',
     'html-lsp',
-    'markdownlint',
-    'prettier',
-    'tree-sitter-cli', -- required by nvim-treesitter (main branch) to compile parsers
-    'python-lsp-server',
+    -- C#: intentionally not installed yet. Every published version of
+    -- `roslyn-language-server` ships its tool manifest under `tools/net10.0/`, which
+    -- the .NET 9 SDK cannot read, so `dotnet tool install` fails with
+    -- "DotnetToolSettings.xml not found". The same is true of `csharp-language-server`.
+    -- Install the .NET 10 SDK, then uncomment this line.
+    -- 'roslyn-language-server',
+    'ruff',
     'typescript-language-server',
     'yaml-language-server',
+
+    -- Formatters and linters (wired up in the conform/lint sections).
+    'csharpier',
+    'gofumpt',
+    'goimports',
+    'markdownlint',
+    'prettier',
+
+    -- Build tooling.
+    'tree-sitter-cli', -- required by nvim-treesitter (main branch) to compile parsers
   })
 
   require('mason-tool-installer').setup { ensure_installed = ensure_installed }
@@ -870,7 +891,11 @@ do
       if disable_filetypes[vim.bo[bufnr].filetype] then
         return nil
       else
-        return { timeout_ms = 500 }
+        -- 500ms (the kickstart default) is too tight for a cold Go toolchain:
+        -- goimports' first run builds its module cache and silently misses the
+        -- deadline, so the save appears to do nothing. This is a ceiling, not a
+        -- delay - warm runs still return in ~90ms.
+        return { timeout_ms = 2000 }
       end
     end,
     default_format_opts = {
@@ -878,16 +903,31 @@ do
     },
     -- You can also specify external formatters in here.
     formatters_by_ft = {
-      -- rust = { 'rustfmt' },
-      -- Conform can also run multiple formatters sequentially
-      -- python = { "isort", "black" },
-      --
+      -- `goimports` adds/removes imports, which gopls does not do on save;
+      -- `gofumpt` then applies a stricter superset of gofmt.
+      go = { 'goimports', 'gofumpt' },
+
+      -- `ruff` replaces black + isort: fix lint violations, sort imports, then format.
+      python = { 'ruff_fix', 'ruff_organize_imports', 'ruff_format' },
+
+      cs = { 'csharpier' },
+
+      -- Keep every web filetype on prettier so a .ts and a .js file in the same
+      -- project come out formatted identically.
+      javascript = { 'prettier' },
+      javascriptreact = { 'prettier' },
+      typescript = { 'prettier' },
+      typescriptreact = { 'prettier' },
+      css = { 'prettier' },
+      scss = { 'prettier' },
+      html = { 'prettier' },
+      json = { 'prettier' },
+      jsonc = { 'prettier' },
+      yaml = { 'prettier' },
+      markdown = { 'prettier' },
+
       -- NOTE: `lua` is deliberately absent: Lua formatting goes through the
       -- `stylua` language server (see the LSP section) via `lsp_format = 'fallback'`.
-      --
-      -- You can use 'stop_after_first' to run the first available formatter from the list
-      javascript = { 'prettier', 'prettierd', stop_after_first = true },
-      html = { 'prettier' },
     },
   }
 
