@@ -588,6 +588,13 @@ do
       -- To jump back, press <C-t>.
       vim.keymap.set('n', 'grd', builtin.lsp_definitions, { buffer = buf, desc = '[G]oto [D]efinition' })
 
+      -- `gd` is Vim's built-in "goto local declaration": a plain text search that has no
+      -- understanding of the language. It looks for the enclosing function by finding a `{`
+      -- in column 1, which gofmt never produces, so in Go it silently falls back to line 1
+      -- and jumps to the first textual match in the file. Override it with the real LSP
+      -- lookup, but only in buffers that actually have a language server attached.
+      vim.keymap.set('n', 'gd', builtin.lsp_definitions, { buffer = buf, desc = '[G]oto [D]efinition' })
+
       -- Jump to the definition in a vertical / horizontal split.
       vim.keymap.set('n', 'gv', function()
         vim.cmd.wincmd 'v'
