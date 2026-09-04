@@ -167,6 +167,9 @@ do
   -- Minimal number of screen lines to keep above and below the cursor.
   vim.o.scrolloff = 10
 
+  -- Start with every fold open. Folds themselves are provided by treesitter
+  -- (see the treesitter section); without this, files would open collapsed.
+  vim.o.foldlevelstart = 99
   -- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
   -- instead raise a dialog asking if you wish to save the current file(s)
   -- See `:help 'confirm'`
@@ -417,6 +420,9 @@ do
       { '<leader>s', group = '[S]earch', mode = { 'n', 'v' } },
       { '<leader>t', group = '[T]oggle' },
       { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } }, -- Enable gitsigns recommended keymaps first
+      { '<leader>x', group = 'Diagnostics / Trouble' },
+      { '<leader>c', group = '[C]ode Symbols (Trouble)' },
+      { '<leader>g', group = '[G]it' },
       { 'gr', group = 'LSP Actions', mode = { 'n' } },
     },
   }
@@ -1006,7 +1012,7 @@ do
     -- the rust implementation via `'prefer_rust_with_warning'`
     --
     -- See `:help blink-cmp-config-fuzzy` for more information
-    fuzzy = { implementation = 'lua' },
+    fuzzy = { implementation = 'prefer_rust_with_warning' },
 
     -- Shows a signature help window while you type arguments for a function
     signature = { enabled = true },
@@ -1040,8 +1046,10 @@ do
 
     -- Enable treesitter based folds
     -- For more info on folds see `:help folds`
-    -- vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
-    -- vim.wo.foldmethod = 'expr'
+    -- `foldlevelstart` is set to 99 in the options section so files still open
+    -- fully expanded; use zc/zo/za to fold, zR/zM to open/close everything.
+    vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+    vim.wo.foldmethod = 'expr'
 
     -- Check if treesitter indentation is available for this language, and if so enable it
     -- in case there is no indent query, the indentexpr will fallback to the vim's built in one
