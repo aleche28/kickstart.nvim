@@ -846,12 +846,9 @@ do
     'eslint-lsp',
     'gopls',
     'html-lsp',
-    -- C#: intentionally not installed yet. Every published version of
-    -- `roslyn-language-server` ships its tool manifest under `tools/net10.0/`, which
-    -- the .NET 9 SDK cannot read, so `dotnet tool install` fails with
-    -- "DotnetToolSettings.xml not found". The same is true of `csharp-language-server`.
-    -- Install the .NET 10 SDK, then uncomment this line.
-    -- 'roslyn-language-server',
+    -- C#. Ships its tool manifest under `tools/net10.0/`, so this needs the .NET 10
+    -- SDK on PATH; an older SDK fails with "DotnetToolSettings.xml not found".
+    'roslyn-language-server',
     'ruff',
     'typescript-language-server',
     'yaml-language-server',
